@@ -6,6 +6,12 @@
     <RootNamespace>dotnet_bd_projekt</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql" Version="8.0.4" />
+    <PackageReference Include="Raylib-cs" Version="6.1.1" />
+  </ItemGroup>
 
 </Project>
