@@ -1,6 +1,8 @@
+using System.Text.Json;
+
 namespace Game.Levels;
 
-class Level {
+public class Level {
     public string name { get; set; } = string.Empty;
     public string author { get; set; } = string.Empty;
     public List<Stage> stages { get; set; } = new();

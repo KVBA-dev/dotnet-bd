@@ -1,7 +1,7 @@
 using System.Numerics;
 namespace Game.Levels;
 
-class Stage {
+public class Stage {
     public Vector2 start { get; set; }
     public Vector2 end { get; set; }
     public List<Chunk> chunks { get; set; } = new();
