@@ -23,7 +23,7 @@ public class InputField : UIElement {
         }
         rl.DrawRectangleLinesEx(Rect, 3 * UISpecs.Scale, Color.SkyBlue);
         int textWidth = rl.MeasureText(Text, (int)(TextSize * UISpecs.Scale));
-        int x = (int)Rect.X;
+        int x = (int)(Rect.X + 4 * UISpecs.Scale);
         int y = (int)Rect.Y;
         switch (Alignment) {
             case Alignment.CenterLeft:

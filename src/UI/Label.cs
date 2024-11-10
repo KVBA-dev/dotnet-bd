@@ -55,4 +55,9 @@ public class Label : UIElement {
 
         rl.DrawText(Caption, x, y, (int)(TextSize * UISpecs.Scale), Color);
     }
+
+    public static void DrawImmediate(string text, Rectangle rect, Alignment alignment, int size, Color color) {
+        Label label = new(null, rect, text) { Alignment = alignment, TextSize = size };
+        label.Render();
+    }
 }

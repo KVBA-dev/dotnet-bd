@@ -85,7 +85,6 @@ public sealed class LevelEditorSubscreen : ISubScreen, IUIHandler {
     }
 
     public void OpenStageEditor(Stage stage) {
-        Console.WriteLine("Opening stage");
         StageEditorSubscreen stageEditor = new(Parent, State, stage);
         stageEditor.OnBack = () => Parent.screens.Pop();
         Parent.screens.Push(stageEditor);

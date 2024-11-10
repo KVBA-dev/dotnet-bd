@@ -4,6 +4,7 @@ namespace Game.Levels;
 public class Stage {
     public Vector2 start { get; set; }
     public Vector2 end { get; set; }
+    public string name { get; set; } = string.Empty;
     public List<Chunk> chunks { get; set; } = new();
 
     public static bool operator == (Stage lhs, Stage rhs) {
