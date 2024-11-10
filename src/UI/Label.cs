@@ -5,13 +5,14 @@ namespace Game.UI;
 public class Label : UIElement {
     public string Caption { get; set; }
     public int TextSize { get; set; } = 15;
+    public Color Color { get; set; } = Color.White;
     public Alignment Alignment { get; set; } = Alignment.Center;
     public Label(IUIHandler parent, Rectangle rect, string caption) : base(parent, rect) {
         Caption = caption;
     }
 
     public override void Render() {
-        int textWidth = rl.MeasureText(Caption, (int)(TextSize * Constants.UIScale));
+        int textWidth = rl.MeasureText(Caption, (int)(TextSize * UISpecs.Scale));
         int x = (int)Rect.X;
         int y = (int)Rect.Y;
         switch (Alignment) {
@@ -41,17 +42,17 @@ public class Label : UIElement {
             case Alignment.CenterLeft:
             case Alignment.Center:
             case Alignment.CenterRight:
-                y += (int)(Rect.Height - TextSize * Constants.UIScale) / 2;
+                y += (int)(Rect.Height - TextSize * UISpecs.Scale) / 2;
                 break;
             case Alignment.BottomCenter:
             case Alignment.BottomLeft:
             case Alignment.BottomRight:
-                y += (int)(Rect.Height - TextSize * Constants.UIScale);
+                y += (int)(Rect.Height - TextSize * UISpecs.Scale);
                 break;
             default:
                 break;
         }
 
-        rl.DrawText(Caption, x, y, (int)(TextSize * Constants.UIScale), Color.White);
+        rl.DrawText(Caption, x, y, (int)(TextSize * UISpecs.Scale), Color);
     }
 }

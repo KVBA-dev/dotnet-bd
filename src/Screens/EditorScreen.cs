@@ -1,3 +1,4 @@
+using Game.Levels;
 using Game.UI;
 using Raylib_cs;
 
@@ -8,10 +9,16 @@ public sealed class EditorScreen : IScreen, IUIHandler {
     public GameState State { get; init; }
     public Stack<ISubScreen> screens { get; init; }
     public UIElement FocusedElement => throw new NotImplementedException();
+    private Level level;
+    public Level Level => level;
+    public event Action OnLevelLoaded;
 
-    public EditorScreen(GameState state) {
+    public EditorScreen(GameState state, string levelPath) {
         State = state;
         screens = new();
+        level = new();
+        LoadLevel(levelPath);
+        screens.Push(new LevelEditorSubscreen(this, state));
     }
 
     public void Render() {
@@ -19,14 +26,6 @@ public sealed class EditorScreen : IScreen, IUIHandler {
             screens.Peek().Render();
             return;
         }
-        (int width, int height) = (rl.GetScreenWidth(), rl.GetScreenHeight());
-        rl.BeginDrawing();
-
-        rl.ClearBackground(Color.Beige);
-
-        rl.DrawText(levelPath, (int)(10 * Constants.UIScale), (int)(10 * Constants.UIScale), (int)(15 * Constants.UIScale), Color.Black);
-
-        rl.EndDrawing();
     }
 
     public void SetFocused(UIElement element) {
@@ -35,9 +34,22 @@ public sealed class EditorScreen : IScreen, IUIHandler {
 
     public void LoadLevel(string path) {
         levelPath = path;
+        Level? level = LevelLoader.LoadLevel(path);
+        this.level = level ?? new();
+        OnLevelLoaded?.Invoke();
+    }
+
+    public void ExitEditor() {
+        LevelLoader.SaveLevel(levelPath, level);
+        State.currentScreen = new MainMenuScreen(State);
+        GC.Collect();
     }
 
     public void Update() {
+        if (screens.Count > 0) {
+            screens.Peek().Update();
+            return;
+        }
         if (Input.UICancel) {
             MainMenuScreen mainMenu = new(State);
             State.currentScreen = mainMenu;

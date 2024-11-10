@@ -44,9 +44,8 @@ public class MainMenuSubscreen : ISubScreen, IUIHandler {
     }
 
     public void Render() {
-        (int width, int height) = (rl.GetScreenWidth(), rl.GetScreenHeight());
-        int titleTextSize = (int)(30 * Constants.UIScale);
-        int optionTextSize = (int)(15 * Constants.UIScale);
+        int titleTextSize = (int)(30 * UISpecs.Scale);
+        int optionTextSize = (int)(15 * UISpecs.Scale);
 
         Rectangle box = new();
         int textWidth = rl.MeasureText("TRIAL MAKER", titleTextSize);
@@ -55,14 +54,14 @@ public class MainMenuSubscreen : ISubScreen, IUIHandler {
         rl.BeginDrawing();
         rl.ClearBackground(Color.DarkBlue);
 
-        rl.DrawText("TRIAL MAKER", (width - textWidth) / 2, height / 8, titleTextSize, Color.White);
+        rl.DrawText("TRIAL MAKER", (UISpecs.Width - textWidth) / 2, UISpecs.Height / 8, titleTextSize, Color.White);
         int i = 0;
         foreach (Button button in Elements) {
-            textY = height / 2 + 2 * i * optionTextSize;
+            textY = UISpecs.Height / 2 + 2 * i * optionTextSize;
 
-            box.Width = 100 * Constants.UIScale;
-            box.Height = Constants.UIScale * 15 * 3 / 2;
-            box.X = (width - box.Width) / 2;
+            box.Width = 100 * UISpecs.Scale;
+            box.Height = UISpecs.Scale * 15 * 3 / 2;
+            box.X = (UISpecs.Width - box.Width) / 2;
             box.Y = textY - box.Height / 6;
 
             button.Rect = box;

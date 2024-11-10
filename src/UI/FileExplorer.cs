@@ -4,6 +4,7 @@ using System.IO;
 using Game.Resources;
 using Raylib_cs;
 using Game.Screens;
+using Npgsql.Replication;
 
 namespace Game.UI;
 
@@ -95,7 +96,7 @@ public class FileExplorer : UIElement {
             return;
         }
 
-        int size = (int)(15 * Constants.UIScale);
+        int size = (int)(15 * UISpecs.Scale);
         int i = -topIdx * size;
         Rectangle hitbox;
         foreach (FileExplorerEntry e in explorerEntries) {
@@ -103,7 +104,7 @@ public class FileExplorer : UIElement {
             hitbox = e.rect;
             // hitbox = RectIntersect(Rect, e.rect);
             e.hovered = false;
-            if (!MouseIntersects(hitbox)) {
+            if (!rl.CheckCollisionPointRec(rl.GetMousePosition(), hitbox)) {
                 i += size;
                 continue;
             }
@@ -141,9 +142,8 @@ public class FileExplorer : UIElement {
     }
 
     public override void Render() {
-        (int width, int height) = (rl.GetScreenWidth(), rl.GetScreenHeight());
 
-        int size = (int)(15 * Constants.UIScale);
+        int size = (int)(15 * UISpecs.Scale);
 
         rl.BeginTextureMode(canvas); {
             rl.ClearBackground(rl.ColorAlpha(Color.Blue, .5f));
@@ -183,22 +183,10 @@ public class FileExplorer : UIElement {
         canvasRect.Height *= -1;
         rl.DrawTexturePro(canvas.Texture, canvasRect, Rect, new(0, 0), 0f, Color.White);
 
-        rl.DrawText(DisplayPath, 0, height - size, size, Color.White);
+        rl.DrawText(DisplayPath, 0, UISpecs.Height - size, size, Color.White);
     }
 
-    public static Rectangle RelativeRect(Rectangle parent, Rectangle child) {
-        Assert.That(child.X >= 0 && child.X <= 1);
-        Assert.That(child.Y >= 0 && child.Y <= 1);
-        Assert.That(child.Width >= 0 && child.Width <= 1);
-        Assert.That(child.Height >= 0 && child.Height <= 1);
-
-        return new(
-            parent.X + child.X * parent.Width,
-            parent.Y + child.Y * parent.Height,
-            parent.Width * child.Width,
-            parent.Height * child.Height
-        );
-    }
+    
 
     public static Rectangle RectIntersect(Rectangle a, Rectangle b) {
         Vector2 topLeft = new();

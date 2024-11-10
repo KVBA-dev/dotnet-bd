@@ -37,8 +37,8 @@ public class SettingsMenuSubscreen : ISubScreen, IUIHandler {
     public void Render() {
         (int width, int height) = (rl.GetScreenWidth(), rl.GetScreenHeight());
 
-        lblVolume.Rect = new(200 * Constants.UIScale, height / 2, 200 * Constants.UIScale, 30);
-        btnBack.Rect = new(width / 2 - 50 * Constants.UIScale, height - 50 * Constants.UIScale, 100 * Constants.UIScale, 30 * Constants.UIScale);
+        lblVolume.Rect = new(200 * UISpecs.Scale, height / 2, 200 * UISpecs.Scale, 30);
+        btnBack.Rect = new(width / 2 - 50 * UISpecs.Scale, height - 50 * UISpecs.Scale, 100 * UISpecs.Scale, 30 * UISpecs.Scale);
 
         rl.BeginDrawing();
         rl.ClearBackground(Color.DarkBlue);

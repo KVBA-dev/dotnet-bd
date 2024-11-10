@@ -1,6 +1,6 @@
 namespace Game.Resources;
 
 public interface IRegistry {
-    public void Load();
-    public void Unload();
+    public static abstract void Load();
+    public static abstract void Unload();
 }

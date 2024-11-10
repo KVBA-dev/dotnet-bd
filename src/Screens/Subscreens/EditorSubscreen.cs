@@ -21,8 +21,8 @@ public class EditorSubscreen : ISubScreen, IUIHandler {
 
     private void OpenEditor() {
         fileExplorer.OnLevelOpen -= OpenEditor;
-        EditorScreen editor = new(State);
-        editor.LoadLevel(fileExplorer.SelectedLevel);
+        EditorScreen editor = new(State, fileExplorer.SelectedLevel);
+        // editor.LoadLevel(fileExplorer.SelectedLevel);
 
         State.currentScreen = editor;
         GC.Collect();
@@ -45,12 +45,11 @@ public class EditorSubscreen : ISubScreen, IUIHandler {
     }
 
     public void Render() {
-        (int width, int height) = (rl.GetScreenWidth(), rl.GetScreenHeight());
-        int titletextSize = (int)(30 * Constants.UIScale);
+        int titletextSize = (int)(30 * UISpecs.Scale);
 
         int textWidth = rl.MeasureText("EDITOR", titletextSize);
 
-        fileExplorer.Rect = new(width / 10, height / 5, width * .8f, height * .6f);
+        fileExplorer.Rect = new(UISpecs.Width / 10, UISpecs.Height / 5, UISpecs.Width * .8f, UISpecs.Height * .6f);
         if (!fileExplorer.Initialised) {
             fileExplorer.InitCanvas();
         }
@@ -59,7 +58,7 @@ public class EditorSubscreen : ISubScreen, IUIHandler {
 
         rl.ClearBackground(Color.DarkBlue);
 
-        rl.DrawText("EDITOR", (width - textWidth) / 2, height / 8, titletextSize, Color.White);
+        rl.DrawText("EDITOR", (UISpecs.Width - textWidth) / 2, UISpecs.Height / 8, titletextSize, Color.White);
 
         fileExplorer.Render();
 

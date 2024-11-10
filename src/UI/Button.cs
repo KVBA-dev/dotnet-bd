@@ -12,7 +12,7 @@ public class Button : UIElement {
     }
 
     public override void Update() {
-        if (MouseIntersects()) {
+        if (rl.CheckCollisionPointRec(rl.GetMousePosition(), Rect)) {
             parent.SetFocused(this);
             if (rl.IsMouseButtonPressed(MouseButton.Left)) {
                 OnClick?.Invoke();
@@ -22,7 +22,7 @@ public class Button : UIElement {
     }
 
     public override void Render() {
-        int textSize = (int)(15 * Constants.UIScale);
+        int textSize = (int)(15 * UISpecs.Scale);
         int textWidth = rl.MeasureText(Caption, textSize);
         int textX = (int)Rect.X + ((int)Rect.Width - textWidth) / 2;
         int textY = (int)Rect.Y + textSize / 3;

@@ -7,15 +7,14 @@ public class IconRegistry : IRegistry {
 
     public Texture2D File { get; private set; }
     public Texture2D Directory { get; private set; }
-
     private IconRegistry() {}
-    public void Load() {
-        File = rl.LoadTexture("./res/ui/file.png");
-        Directory = rl.LoadTexture("./res/ui/dir.png");
+    public static void Load() {
+        Reg.File = rl.LoadTexture("./res/ui/file.png");
+        Reg.Directory = rl.LoadTexture("./res/ui/dir.png");
     }
 
-    public void Unload() {
-        rl.UnloadTexture(File);
-        rl.UnloadTexture(Directory);
+    public static void Unload() {
+        rl.UnloadTexture(Reg.File);
+        rl.UnloadTexture(Reg.Directory);
     }
 }

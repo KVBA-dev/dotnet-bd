@@ -23,7 +23,7 @@ public class Game {
         state.running = true;
         state.currentScreen = new MainMenuScreen(state);
 
-        IconRegistry.Reg.Load();
+        IconRegistry.Load();
     }
 
     static void GameLoop(GameState state) {
@@ -38,7 +38,7 @@ public class Game {
     }
 
     static void Cleanup(GameState state) {
-        IconRegistry.Reg.Unload();
+        IconRegistry.Unload();
 
         rl.CloseWindow();
     }

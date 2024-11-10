@@ -19,12 +19,5 @@ public abstract class UIElement {
     public virtual void Update() {}
     public virtual void Render() {}
 
-    public bool MouseIntersects(bool worldSpace = false) => MouseIntersects(Rect, worldSpace);
-    public bool MouseIntersects(Rectangle rect, bool worldSpace = false) {
-        Vector2 mousePos = Input.MousePosition;
-        bool x = mousePos.X >= rect.X && mousePos.X <= rect.X + rect.Width;
-        bool y = mousePos.Y >= rect.Y && mousePos.Y <= rect.Y + rect.Height;
-        return x && y;
-    }
 
 }

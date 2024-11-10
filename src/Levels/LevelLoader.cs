@@ -13,20 +13,33 @@ public static class LevelLoader {
         if (!File.Exists(path)) {
             return null;
         }
-        return JsonSerializer.Deserialize<Level>(path, options);
+        Level? level;
+        try {
+            level = JsonSerializer.Deserialize<Level>(File.ReadAllText(path), options);
+        }
+        catch (JsonException e) {
+            Console.WriteLine($"ERROR: Cannot read the file: {e.Message}");
+            level = null;
+        }
+        return level;
     }
 
     public static bool SaveLevel(string path, Level level) {
-        // this couldve been done better
+        Task<bool> task = Task.Run(() => SaveAsync(path, level));
+        while (!task.IsCompleted) {};
+        return task.Result;
+    }
+
+
+    private static async Task<bool> SaveAsync(string path, Level level) {
         try {
-            StreamWriter writer = new(File.OpenWrite(path));
-            string json = JsonSerializer.Serialize(level, options);
-            writer.Write(json);
-            writer.Close();
+            MemoryStream mem = new();
+            await JsonSerializer.SerializeAsync(mem, level, options);
+            File.WriteAllBytes(path, mem.GetBuffer()[..(int)mem.Length]);
         }
         catch {
             return false;
         }
         return true;
-    }
+    } 
 }
