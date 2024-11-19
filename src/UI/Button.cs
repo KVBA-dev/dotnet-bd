@@ -11,14 +11,14 @@ public class Button : UIElement {
         OnUIConfirm = _ => OnClick?.Invoke();
     }
 
-    public override void Update() {
+    public override bool Update() {
         if (rl.CheckCollisionPointRec(rl.GetMousePosition(), Rect)) {
-            parent.SetFocused(this);
             if (rl.IsMouseButtonPressed(MouseButton.Left)) {
                 OnClick?.Invoke();
             }
+            return true;
         }
-
+        return false;
     }
 
     public override void Render() {
@@ -27,12 +27,12 @@ public class Button : UIElement {
         int textX = (int)Rect.X + ((int)Rect.Width - textWidth) / 2;
         int textY = (int)Rect.Y + textSize / 3;
 
-        Color col = Color.SkyBlue;
-        if (Focused) {
-            col = Color.White;
-            rl.DrawRectangleRec(Rect, rl.ColorAlpha(Color.SkyBlue, .5f));
+        Color col = palette.background;
+        if (Input.MouseInRect(Rect)) {
+            col = palette.backgroundSelected;
         }
-        rl.DrawText(Caption, textX, textY, textSize, col);
+        rl.DrawRectangleRec(Rect, col);
+        rl.DrawText(Caption, textX, textY, textSize, palette.foreground);
     }
 
     public Button OnClicked(Action action) {

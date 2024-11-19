@@ -1,6 +1,5 @@
 using Raylib_cs;
 using System.Numerics;
-using System.Diagnostics;
 
 namespace Game;
 
@@ -31,5 +30,13 @@ public static class Input {
 
         UIConfirm = rl.IsKeyPressed(KeyboardKey.Enter);
         UICancel = rl.IsKeyPressed(KeyboardKey.Escape);
+    }
+
+    public static bool MouseInRect(Rectangle rect) {
+        return rl.CheckCollisionPointRec(MousePosition, rect);
+    }
+
+    public static Vector2 MouseToWorldSpace(Camera2D camera) {
+        return rl.GetScreenToWorld2D(MousePosition, camera);
     }
 }

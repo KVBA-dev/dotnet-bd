@@ -1,9 +1,10 @@
-using Game.Levels;
 using Raylib_cs;
+using Game.Levels;
+using System.Text.RegularExpressions;
 
 namespace Game.UI;
 
-public sealed class StageSelector : UIElement {
+public sealed partial class StageSelector : UIElement {
     private readonly Level level;
     private static readonly Color bgCol = rl.ColorBrightness(Color.DarkBlue, -.2f);
     private static readonly Color selectCol = rl.ColorAlpha(Color.SkyBlue, .5f);
@@ -19,6 +20,9 @@ public sealed class StageSelector : UIElement {
     private bool isDirty = false;
     private Stack<int> stagesForDeletion = new();
 
+    [GeneratedRegex(@"Stage \d+")]
+    private static partial Regex StageNameRegex();
+
     public StageSelector(IUIHandler parent, Rectangle rect, Level level) : base(parent, rect) {
         this.level = level;
         OnStageSelected = _ => { };
@@ -30,7 +34,7 @@ public sealed class StageSelector : UIElement {
 
     }
 
-    public override void Update() {
+    public override bool Update() {
         if (isDirty) {
             while (stagesForDeletion.Count > 0) {
                 level.stages.RemoveAt(stagesForDeletion.Pop());
@@ -52,7 +56,7 @@ public sealed class StageSelector : UIElement {
         }
 
         if (!rl.IsMouseButtonPressed(MouseButton.Left)) {
-            return;
+            return false;
         }
         if (mouseOnNext) {
             position += 1;
@@ -66,6 +70,7 @@ public sealed class StageSelector : UIElement {
                 position = 0;
             }
         }
+        return true;
     }
 
     public override void Render() {
@@ -93,7 +98,19 @@ public sealed class StageSelector : UIElement {
             if (idx == level.stages.Count) {
                 AddStageElement addElem = new (this, Rect.RelativeRect(baseRect));
                 addElem.OnSelected += () => {
-                    level.stages.Add(new());
+                    Stage newStage = new();
+                    int stageNum;
+                    try {
+                        stageNum = level.stages.Where(s => StageNameRegex().Match(s.name).Success)
+                                               .Select(s => int.Parse(s.name.Split(' ')[^1]))
+                                               .OrderBy(i => i)
+                                               .Last() + 1;
+                    }
+                    catch {
+                        stageNum = 1;
+                    }
+                    newStage.name = $"Stage {stageNum}";
+                    level.stages.Add(newStage);
                 };
                 yield return addElem;
                 yield break;
@@ -106,6 +123,18 @@ public sealed class StageSelector : UIElement {
                 stagesForDeletion.Push(idx);
                 isDirty = true;
             };
+            editElem.OnMoveNext += () => {
+                (level.stages[idx], level.stages[idx + 1]) = (level.stages[idx + 1], level.stages[idx]);
+            };
+            editElem.OnMovePrevious += () => {
+                (level.stages[idx], level.stages[idx - 1]) = (level.stages[idx - 1], level.stages[idx]);
+            };
+            if (idx == 0) {
+                editElem = editElem.First();
+            }
+            if (idx == level.stages.Count - 1) {
+                editElem = editElem.Last();
+            }
             yield return editElem;
             baseRect.X += .25f;
             idx++;

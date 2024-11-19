@@ -1,7 +1,7 @@
 namespace Game.Levels;
 
 public class Chunk {
-    const int CHUNK_SIZE = 16;
+    public const int CHUNK_SIZE = 16;
     public int chunkX { get; set; }
     public int chunkY { get; set; }
     public TileType[,] tiles = new TileType[CHUNK_SIZE, CHUNK_SIZE];
@@ -56,5 +56,14 @@ public class Chunk {
 
     public static bool operator != (Chunk lhs, Chunk rhs) {
         return !(lhs == rhs);
+    }
+
+    public Chunk Clone() {
+        return new() {
+            chunkX = chunkX,
+            chunkY = chunkY,
+            tiles = (TileType[,])tiles.Clone(),
+        };
+
     }
 }

@@ -11,6 +11,10 @@ public class Label : UIElement {
         Caption = caption;
     }
 
+    public override bool Update() {
+        return true;
+    }
+
     public override void Render() {
         int textWidth = rl.MeasureText(Caption, (int)(TextSize * UISpecs.Scale));
         int x = (int)Rect.X;

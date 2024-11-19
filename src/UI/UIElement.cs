@@ -1,5 +1,4 @@
 using Raylib_cs;
-using System.Numerics;
 
 namespace Game.UI;
 
@@ -7,6 +6,7 @@ public abstract class UIElement {
     public Rectangle Rect { get; set; }
     public bool Focused { get; set; }
     protected IUIHandler parent;
+    public ColorPalette palette { get; set; } = ColorPalette.Default;
 
     public Action<UIElement> OnUIConfirm = _ => {};
     public Action<UIElement> OnUICancel = _ => {};
@@ -16,8 +16,8 @@ public abstract class UIElement {
         this.parent = parent;
     }
 
-    public virtual void Update() {}
-    public virtual void Render() {}
+    public abstract bool Update();
+    public abstract void Render();
 
 
 }

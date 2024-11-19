@@ -91,9 +91,9 @@ public class FileExplorer : UIElement {
         }
     }
 
-    public override void Update() {
+    public override bool Update() {
         if (!Focused) {
-            return;
+            return false;
         }
 
         int size = (int)(15 * UISpecs.Scale);
@@ -112,7 +112,7 @@ public class FileExplorer : UIElement {
             if (rl.IsMouseButtonPressed(MouseButton.Left)) {
                 if (e.selected) {
                     EntryClick(e);
-                    return;
+                    return true;
                 }
                 if (SelectedEntry is not null) {
                     SelectedEntry.selected = false;
@@ -121,6 +121,7 @@ public class FileExplorer : UIElement {
             }
             i += size;
         }
+        return false;
     }
 
     public void EntryClick(FileExplorerEntry entry) {

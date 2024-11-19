@@ -20,4 +20,20 @@ public class Stage {
     public static bool operator != (Stage lhs, Stage rhs) {
         return !(lhs == rhs);
     }
+
+    public Stage Clone() {
+        return new() {
+            start = start,
+            end = end,
+            name = name,
+            chunks = chunks.Select(c => c.Clone()).ToList(),
+        };
+    }
+
+    public void CopyFrom(Stage other) {
+        start = other.start;
+        end = other.end;
+        name = other.name;
+        chunks = other.chunks.Select(c => c.Clone()).ToList();
+    }
 }

@@ -19,9 +19,12 @@ public class InputField : UIElement {
 
     public override void Render() {
         if (IsActive) {
-            rl.DrawRectangleRec(Rect, Color.Blue);
+            rl.DrawRectangleRec(Rect, palette.backgroundSelected);
         }
-        rl.DrawRectangleLinesEx(Rect, 3 * UISpecs.Scale, Color.SkyBlue);
+        else {
+            rl.DrawRectangleRec(Rect, palette.background);
+        }
+        rl.DrawRectangleLinesEx(Rect, 3 * UISpecs.Scale, palette.border);
         int textWidth = rl.MeasureText(Text, (int)(TextSize * UISpecs.Scale));
         int x = (int)(Rect.X + 4 * UISpecs.Scale);
         int y = (int)Rect.Y;
@@ -63,10 +66,10 @@ public class InputField : UIElement {
                 break;
         }
 
-        rl.DrawText(Text, x, y, (int)(TextSize * UISpecs.Scale), Color.White);
+        rl.DrawText(Text, x, y, (int)(TextSize * UISpecs.Scale), palette.foreground);
     }
 
-    public override void Update() {
+    public override bool Update() {
         if (rl.IsMouseButtonPressed(MouseButton.Left)) {
             if (IsActive) {
                 OnEditingEnd?.Invoke(Text);
@@ -81,7 +84,7 @@ public class InputField : UIElement {
         }
 
         if (!IsActive) {
-            return;
+            return false;
         }
         int key = rl.GetKeyPressed();
 
@@ -91,6 +94,7 @@ public class InputField : UIElement {
         if (rl.IsKeyPressed(KeyboardKey.Backspace) && stringBuilder.Length > 0) {
             stringBuilder.Remove(stringBuilder.Length - 1, 1);
         }
+        return activeField == this;
     }
 
 }

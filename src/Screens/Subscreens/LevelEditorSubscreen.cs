@@ -20,6 +20,10 @@ public sealed class LevelEditorSubscreen : ISubScreen, IUIHandler {
         Parent = parent;
         State = state;
 
+        if (parent is not EditorScreen) {
+            return;
+        }
+
         OnBack = () => { };
 
         inpName = new(this, new());
