@@ -3,6 +3,7 @@ using Game.Levels;
 using Game.Resources;
 using Raylib_cs;
 using System.Numerics;
+using Game.Entities;
 
 namespace Game.Screens;
 
@@ -13,6 +14,7 @@ public sealed class StageEditorSubscreen : ISubScreen, IUIHandler {
     private Stage originalStage;
     private readonly Stage editedStage;
     int selectedTile = 0;
+    bool playtest = false;
 
     LevelRenderer renderer;
     // ui
@@ -21,6 +23,9 @@ public sealed class StageEditorSubscreen : ISubScreen, IUIHandler {
     private readonly ImageButton btn_exit;
     private readonly ImageButton btn_save;
     private readonly TileSelector tileSelector;
+    private readonly ImageButton btn_startTile;
+    private readonly ImageButton btn_endTile;
+    private readonly ImageButton btn_playtest;
 
     private List<UIElement> elements = new();
     public UIElement FocusedElement => elements.Single(e => e.Focused);
@@ -32,12 +37,15 @@ public sealed class StageEditorSubscreen : ISubScreen, IUIHandler {
         originalStage = stage;
         editedStage = originalStage.Clone();
 
-        state.camera.Target = editedStage.start;
+        cameraPos = editedStage.start * Constants.TILE_SIZE;
 
         inp_name = new(this, new());
         btn_exit = new(this, new(), IconRegistry.Reg.EditorExit);
         btn_save = new(this, new(), IconRegistry.Reg.EditorSave);
         tileSelector = new(this, new());
+        btn_startTile = new(this, new(), TextureRegistry.Reg.Start);
+        btn_endTile = new(this, new(), TextureRegistry.Reg.End);
+        btn_playtest = new(this, new(), IconRegistry.Reg.EditorPlay);
 
         renderer = new(editedStage, true);
 
@@ -67,11 +75,40 @@ public sealed class StageEditorSubscreen : ISubScreen, IUIHandler {
             selectedTile = (int)tile;
         };
 
+        btn_startTile.OnClick += () => {
+            selectedTile = -1;
+        };
+        btn_startTile.palette = ColorPalette.Editor;
+
+        btn_endTile.OnClick += () => {
+            selectedTile = -2;
+        };
+        btn_endTile.palette = ColorPalette.Editor;
+
+        btn_playtest.OnClick += () => {
+            playtest = !playtest;
+            btn_playtest.Image = playtest ? IconRegistry.Reg.EditorStop : IconRegistry.Reg.EditorPlay;
+            if (playtest) {
+                editedStage.Init(State);
+                editedStage.GetPlayer().OnDeath = (p) => {
+                    editedStage.ResetEntities();
+                };
+                return;
+            }
+            cameraPos = editedStage.GetPlayer().Pos * Constants.TILE_SIZE;
+            State.camera.Target = cameraPos;
+            editedStage.Quit();
+        };
+        btn_playtest.palette = ColorPalette.Editor;
+
         elements = [
             inp_name,
             btn_exit,
             btn_save,
             tileSelector,
+            btn_startTile,
+            btn_endTile,
+            btn_playtest,
         ];
 
     }
@@ -89,9 +126,26 @@ public sealed class StageEditorSubscreen : ISubScreen, IUIHandler {
         }
         rl.EndMode2D();
         // UI goes here
-        rl.DrawRectangleRec(tileSelector.GetSelectedRect(selectedTile), rl.ColorAlpha(Color.Green, .5f));
-        foreach (UIElement e in elements) {
-            e.Render();
+        if (playtest) {
+            btn_playtest.Render();
+            rl.DrawText($"Input.Left {Input.Left}\n\nInput.Right {Input.Right}\n\nInput.Jump {Input.Jump}", 20, 20, 40, Color.Black);
+        }
+        else {
+            Rectangle selectedRect;
+            if (selectedTile == -1) {
+                selectedRect = btn_startTile.Rect;
+            }
+            else if (selectedTile == -2) {
+                selectedRect = btn_endTile.Rect;
+            }
+            else {
+                selectedRect = tileSelector.GetSelectedRect(selectedTile);
+            }
+            rl.DrawRectangleRec(selectedRect, rl.ColorAlpha(Color.Green, .5f));
+
+            foreach (UIElement e in elements) {
+                e.Render();
+            }
         }
         // --------
         rl.EndDrawing();
@@ -110,10 +164,10 @@ public sealed class StageEditorSubscreen : ISubScreen, IUIHandler {
     bool dragging = false;
     public void Update() {
         mouseOnUI = false;
-        if (rl.IsKeyPressed(KeyboardKey.Escape)) {
-            OnBack?.Invoke();
-            return;
-        }
+        // if (rl.IsKeyPressed(KeyboardKey.Escape)) {
+        //     OnBack?.Invoke();
+        //     return;
+        // }
         Rectangle nameRect = UISpecs.ScreenRect.RelativeRect(.3f, 0, .6f, .05f);
         nameRect.Y = UISpecs.Scale * 10;
         inp_name.Rect = nameRect;
@@ -126,18 +180,38 @@ public sealed class StageEditorSubscreen : ISubScreen, IUIHandler {
         btn_save.Rect = btnRect;
         btn_save.ImageRect = btn_save.Rect.RelativeRect(.1f, .1f, .8f, .8f);
 
+        btnRect.Position = new(160 * UISpecs.Scale, UISpecs.Height - 50 * UISpecs.Scale);
+        btn_startTile.Rect = btnRect;
+        btn_startTile.ImageRect = btnRect.RelativeRect(.1f, .1f, .8f, .8f);
+
+        btnRect.X += 40 * UISpecs.Scale;
+        btn_endTile.Rect = btnRect;
+        btn_endTile.ImageRect = btnRect.RelativeRect(.1f, .1f, .8f, .8f);
+
+        btnRect.Position = new(UISpecs.Width - 50 * UISpecs.Scale, 20 * UISpecs.Scale);
+        btn_playtest.Rect = btnRect;
+        btn_playtest.ImageRect = btnRect.RelativeRect(.1f, .1f, .8f, .8f);
+
+
         btnRect = new(20 * UISpecs.Scale, UISpecs.Height - 140 * UISpecs.Scale, new Vector2(120, 120) * UISpecs.Scale);
         tileSelector.Rect = btnRect;
 
-        foreach (UIElement e in elements) {
-            mouseOnUI |= e.Update();
+        if (!playtest) {
+            foreach (UIElement e in elements) {
+                mouseOnUI |= e.Update();
+            }
+        }
+        else {
+            btn_playtest.Update();
+            PlaytestUpdate();
+            return;
         }
 
         if (mouseOnUI) {
             return;
         }
 
-        //try place blocks
+        //try to place blocks
         bool leftMouse = rl.IsMouseButtonPressed(MouseButton.Left)
                       || rl.IsKeyDown(KeyboardKey.LeftShift) && rl.IsMouseButtonDown(MouseButton.Left);
 
@@ -167,6 +241,16 @@ public sealed class StageEditorSubscreen : ISubScreen, IUIHandler {
                 tileY += Chunk.CHUNK_SIZE;
             }
 
+            if (selectedTile == -1) {
+                editedStage.hasStart = true;
+                editedStage.start = new(tileX + chunkX * Chunk.CHUNK_SIZE, tileY + chunkY * Chunk.CHUNK_SIZE);
+                return;
+            }
+            if (selectedTile == -2) {
+                editedStage.hasEnd = true;
+                editedStage.end = new(tileX + chunkX * Chunk.CHUNK_SIZE, tileY + chunkY * Chunk.CHUNK_SIZE);
+                return;
+            }
             editedChunk.tiles[tileX, tileY] = (TileType)selectedTile;
 
             return;
@@ -197,5 +281,16 @@ public sealed class StageEditorSubscreen : ISubScreen, IUIHandler {
             State.camera.Target = cameraPos;
             dragging = false;
         }
+    }
+
+    void PlaytestUpdate() {
+        foreach (Entity e in editedStage.entities) {
+            e.Update();
+        }
+        while (editedStage.deathActions.Count > 0) {
+            (Entity e, Action<Entity> action) = editedStage.deathActions.Dequeue();
+            action?.Invoke(e);
+        }
+        State.camera.Target = Constants.Lerp(State.camera.Target, editedStage.GetPlayer().Pos * Constants.TILE_SIZE, Time.DeltaTime * 4);
     }
 }

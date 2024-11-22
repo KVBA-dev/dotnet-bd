@@ -5,4 +5,5 @@ public enum TileType {
     Floor = 1,
     Killing = 2,
     Breakable = 3, 
+    LadderPlatform = 4,
 }

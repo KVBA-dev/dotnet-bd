@@ -5,19 +5,16 @@ public class Chunk {
     public int chunkX { get; set; }
     public int chunkY { get; set; }
     public TileType[,] tiles = new TileType[CHUNK_SIZE, CHUNK_SIZE];
-    public string[] Tiles
-    {
-        get
-        {
+    public byte[,] collisionMask = new byte[CHUNK_SIZE, CHUNK_SIZE];
+    public string[] Tiles {
+        get {
             string[] strings = new string[CHUNK_SIZE];
             int x, y = 0;
             ulong temp;
-            while (y < CHUNK_SIZE)
-            {
+            while (y < CHUNK_SIZE) {
                 x = 0;
                 temp = 0;
-                while (x < CHUNK_SIZE)
-                {
+                while (x < CHUNK_SIZE) {
                     temp = (temp << 4) | (byte)tiles[x, y];
                     x++;
                 }
@@ -26,18 +23,15 @@ public class Chunk {
             }
             return strings;
         }
-        set
-        {
+        set {
             Assert.That(value.Length == CHUNK_SIZE);
             int y = 0;
             int x;
             ulong temp;
-            while (y < CHUNK_SIZE)
-            {
+            while (y < CHUNK_SIZE) {
                 temp = Convert.ToUInt64(value[y], 16);
                 x = CHUNK_SIZE - 1;
-                while (x >= 0)
-                {
+                while (x >= 0) {
                     tiles[x, y] = (TileType)(temp & 0xF);
                     temp >>= 4;
                     x--;
@@ -64,6 +58,21 @@ public class Chunk {
             chunkY = chunkY,
             tiles = (TileType[,])tiles.Clone(),
         };
+    }
 
+    
+    public void PrepareCollisionMask() {
+        for (int x = 0; x < CHUNK_SIZE; x++) {
+            for (int y = 0; y < CHUNK_SIZE; y++) {
+                collisionMask[x, y] = tiles[x, y] switch {
+                    TileType.Empty          => 0,
+                    TileType.Floor          => Constants.COL_SOLID,
+                    TileType.Killing        => Constants.COL_SOLID | Constants.COL_KILLING,
+                    TileType.Breakable      => Constants.COL_SOLID | Constants.COL_BREAKABLE,
+                    TileType.LadderPlatform => Constants.COL_SOLID | Constants.COL_NO_BOTTOM,
+                    _ => 0,
+                };
+            }
+        }
     }
 }

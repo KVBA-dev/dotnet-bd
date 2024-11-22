@@ -2,6 +2,7 @@ using Raylib_cs;
 using Game.Levels;
 using Game.Resources;
 using System.Numerics;
+using Game.Entities;
 namespace Game.UI;
 
 public sealed class LevelRenderer {
@@ -63,6 +64,20 @@ public sealed class LevelRenderer {
         for(int i = 0; i < chunks.Count; i++) {
             RenderChunk(chunks[i]);
         }
+        Rectangle targetRect;
+        if (stage.hasStart) {
+            targetRect = new(stage.start * Constants.TILE_SIZE, new(Constants.TILE_SIZE, Constants.TILE_SIZE));
+            rl.DrawTexturePro(TextureRegistry.Reg.Start, TextureRegistry.Reg.Start.Rectangle(), targetRect, Vector2.Zero, 0, Color.White);
+        }
+        if (stage.hasEnd) {
+            targetRect = new(stage.end * Constants.TILE_SIZE, new(Constants.TILE_SIZE, Constants.TILE_SIZE));
+            rl.DrawTexturePro(TextureRegistry.Reg.End, TextureRegistry.Reg.End.Rectangle(), targetRect, Vector2.Zero, 0, Color.White);
+        }
+
+        foreach(Entity e in stage.entities) {
+            e.Render();
+        }
+
         if (!editorMode) {
             return;
         }

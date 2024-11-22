@@ -1,10 +1,6 @@
 using System.Numerics;
-using System.Text;
-using System.IO;
 using Game.Resources;
 using Raylib_cs;
-using Game.Screens;
-using Npgsql.Replication;
 
 namespace Game.UI;
 
