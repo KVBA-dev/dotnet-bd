@@ -17,7 +17,6 @@ public sealed class Player : Entity {
 
     public override void Update() {
         base.Update();
-        Console.WriteLine($"player update ({X}, {Y})");
         VelX += controller.Horizontal;
         VelX *= .9f;
         float newX = X + VelX * Time.DeltaTime;

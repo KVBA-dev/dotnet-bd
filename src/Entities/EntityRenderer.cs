@@ -13,6 +13,11 @@ public sealed class EntityRenderer {
         target.Position = entityPos * Constants.TILE_SIZE;
         target.Size = new Vector2(Constants.TILE_SIZE, Constants.TILE_SIZE) * entity.size;
 
-        rl.DrawTexturePro(texture, texture.Rectangle(), target, Vector2.Zero, 0, Color.White);
+        Rectangle source = texture.Rectangle();
+        if (flipHorizontally) {
+            source.Width *= -1;
+        }
+
+        rl.DrawTexturePro(texture, source, target, Vector2.Zero, 0, Color.White);
     }
 }

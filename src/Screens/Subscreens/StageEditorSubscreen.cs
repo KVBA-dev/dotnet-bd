@@ -128,7 +128,6 @@ public sealed class StageEditorSubscreen : ISubScreen, IUIHandler {
         // UI goes here
         if (playtest) {
             btn_playtest.Render();
-            rl.DrawText($"Input.Left {Input.Left}\n\nInput.Right {Input.Right}\n\nInput.Jump {Input.Jump}", 20, 20, 40, Color.Black);
         }
         else {
             Rectangle selectedRect;
@@ -291,6 +290,6 @@ public sealed class StageEditorSubscreen : ISubScreen, IUIHandler {
             (Entity e, Action<Entity> action) = editedStage.deathActions.Dequeue();
             action?.Invoke(e);
         }
-        State.camera.Target = Constants.Lerp(State.camera.Target, editedStage.GetPlayer().Pos * Constants.TILE_SIZE, Time.DeltaTime * 4);
+        State.camera.Target = Constants.Lerp(State.camera.Target, editedStage.GetPlayer().Pos * Constants.TILE_SIZE, Time.DeltaTime * 6);
     }
 }

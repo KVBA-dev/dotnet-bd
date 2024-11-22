@@ -26,6 +26,12 @@ public abstract class Entity {
         controller.GetAxes();
     }
     public virtual void Render() {
+        if (controller.Horizontal > 0) {
+            renderer.flipHorizontally = false;
+        }
+        if (controller.Horizontal < 0) {
+            renderer.flipHorizontally = true;
+        }
         renderer.Render(this);
     }
     public void GoTo(float x, float y) => (X, Y) = (x, y);
