@@ -32,12 +32,14 @@ public class FileExplorer : UIElement {
     public string SelectedLevel { get; private set; } = string.Empty;
 
     private string DisplayPath {
-        get {
-            return $"{pwd.Substring(rootPath.Length)}\\";
+        get
+        {
+            return $"{pwd.Substring(rootPath.Length)}/";
         }
     }
     public FileExplorerEntry? SelectedEntry {
-        get {
+        get
+        {
             var entry = explorerEntries.Where(e => e.selected);
             if (entry.Count() == 0) {
                 return null;
@@ -72,22 +74,25 @@ public class FileExplorer : UIElement {
         explorerEntries.Clear();
 
         IEnumerable<string> files = Directory.GetFiles(pwd)
-                                  .Select(p => p.Split('\\')[^1]);
+                                  .Select(p => p.Split('/')[^1]);
         IEnumerable<string> dirs = Directory.GetDirectories(pwd)
-                                 .Select(p => p.Split('\\')[^1]);
+                                 .Select(p => p.Split('/')[^1]);
         if (pwd != rootPath) {
             dirs = first.Concat(dirs);
         }
 
-        foreach(string p in dirs) {
+        foreach (string p in dirs) {
             explorerEntries.Add(new(pwd, p, true));
         }
-        foreach(string p in files) {
+        foreach (string p in files) {
             explorerEntries.Add(new(pwd, p, false));
         }
     }
 
     public override bool Update() {
+        if (Input.MouseInRect(Rect)) {
+            parent.SetFocused(this);
+        }
         if (!Focused) {
             return false;
         }
@@ -128,7 +133,7 @@ public class FileExplorer : UIElement {
                 OpenPWD();
                 return;
             }
-            pwd = entry.pwd + '\\' + entry.path;
+            pwd = entry.pwd + '/' + entry.path;
             OpenPWD();
             return;
         }
@@ -142,7 +147,8 @@ public class FileExplorer : UIElement {
 
         int size = (int)(15 * UISpecs.Scale);
 
-        rl.BeginTextureMode(canvas); {
+        rl.BeginTextureMode(canvas);
+        {
             rl.ClearBackground(rl.ColorAlpha(Color.Blue, .5f));
 
             int i = -topIdx * size;
@@ -183,7 +189,6 @@ public class FileExplorer : UIElement {
         rl.DrawText(DisplayPath, 0, UISpecs.Height - size, size, Color.White);
     }
 
-    
 
     public static Rectangle RectIntersect(Rectangle a, Rectangle b) {
         Vector2 topLeft = new();
@@ -191,7 +196,6 @@ public class FileExplorer : UIElement {
 
         topLeft.X = a.X > b.X ? a.X : b.X;
         topLeft.Y = a.Y > b.Y ? a.Y : b.Y;
-        
         bottomRight.X = a.X + a.Width > b.X + b.Width ? a.X + a.Width : b.X + b.Width;
         bottomRight.Y = a.Y + a.Height > b.Y + b.Height ? a.Y + a.Height : b.Y + b.Height;
 

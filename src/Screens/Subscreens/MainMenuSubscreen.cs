@@ -17,24 +17,31 @@ public class MainMenuSubscreen : ISubScreen, IUIHandler {
         {
             new Button(this, new(), "Play"),
 
-            new Button(this, new(), "Browse"),
+            new Button(this, new(), "Browse").OnClicked(() => {
+                OnlineScreen online = new(state);
+                state.currentScreen = online;
+            }),
 
             new Button(this, new(), "Editor").OnClicked(() => {
                 EditorSubscreen editor = new(parent, state);
-                editor.OnBack = () => parent.screens.Pop();
+                editor.OnBack = () => {
+                    parent.screens.Pop();
+                };
                 parent.screens.Push(editor);
             }),
 
             new Button(this, new(), "Settings").OnClicked(() => {
                 SettingsMenuSubscreen settings = new(parent, state);
-                settings.OnBack = () => parent.screens.Pop();
-                parent.screens.Push(settings); 
+                settings.OnBack = () => {
+                    parent.screens.Pop();
+                };
+                parent.screens.Push(settings);
             }),
 
             new Button(this, new(), "Quit").OnClicked(() => state.running = false),
         };
         Elements.Single(e => (e as Button)?.Caption == "Play").Focused = true;
-        OnBack = () => {};
+        OnBack = () => { };
     }
 
     public void SetFocused(UIElement element) {

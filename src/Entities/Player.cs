@@ -10,6 +10,7 @@ public sealed class Player : Entity {
     public Action<Player> OnWin;
     public Player(GameState state, Stage stage) : base(state, stage) {
         controller = new PlayerController();
+        controller.Enabled = true;
         (gravity, initJumpVel) = GetJumpParams(3, .6f);
         initJumpVel *= 4;
         renderer.texture = TextureRegistry.Reg.Player;
@@ -43,6 +44,10 @@ public sealed class Player : Entity {
                 canJump = true;
             }
             VelY = 0;
+        }
+
+        if ((Pos - currentStage.end).LengthSquared() <= 1) {
+            OnWin?.Invoke(this);
         }
     }
 

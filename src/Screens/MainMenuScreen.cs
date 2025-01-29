@@ -7,6 +7,7 @@ public class MainMenuScreen : IScreen {
         State = state;
         screens = new();
         screens.Push(new MainMenuSubscreen(this, state));
+        GC.Collect();
     }
     public void Render() {
         screens.Peek().Render();

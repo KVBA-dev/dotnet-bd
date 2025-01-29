@@ -10,44 +10,50 @@ public class EditorSubscreen : ISubScreen, IUIHandler {
     private List<UIElement> elements { get; init; }
     public FileExplorer fileExplorer { get; init; }
 
-    public UIElement FocusedElement {
-        get {
-            if (fileExplorer.Focused) {
-                return fileExplorer;
-            }
-            return elements.Single(e => e.Focused);
-        }
-    } 
+    Button btn_back;
+
+    Label lbl_title;
+    Label lbl_path;
+
+    public UIElement FocusedElement => elements.Single(e => e.Focused);
 
     private void OpenEditor() {
         fileExplorer.OnLevelOpen -= OpenEditor;
         EditorScreen editor = new(State, fileExplorer.SelectedLevel);
-        // editor.LoadLevel(fileExplorer.SelectedLevel);
 
         State.currentScreen = editor;
-        GC.Collect();
     }
     public EditorSubscreen(IScreen parent, GameState state) {
         Parent = parent;
         State = state;
-        /*
-        buttons to implement:
-        - New Level
-        - Publish Level
-        - Remove Level
-        - Back
+        /* TODO:
+           buttons to implement:
+            - New Level
+            - Publish Level
+            - Remove Level
         */
-        elements = new();
-        fileExplorer = new(this, new(), @"\editor");
+        lbl_title = new(this, new(), "EDITOR");
+        lbl_title.TextSize = 30;
+
+        lbl_path = new(this, new(), "");
+
+        btn_back = new Button(this, new(), "Back").OnClicked(() => OnBack?.Invoke());
+
+        fileExplorer = new(this, new(), @"/editor");
         fileExplorer.OnLevelOpen += OpenEditor;
+
         OnBack = () => { };
-        fileExplorer.Focused = true;
+        elements = [
+            btn_back,
+            fileExplorer,
+            lbl_title,
+            lbl_path,
+        ];
+        btn_back.Focused = true;
     }
 
     public void Render() {
         int titletextSize = (int)(30 * UISpecs.Scale);
-
-        int textWidth = rl.MeasureText("EDITOR", titletextSize);
 
         fileExplorer.Rect = new(UISpecs.Width / 10, UISpecs.Height / 5, UISpecs.Width * .8f, UISpecs.Height * .6f);
         if (!fileExplorer.Initialised) {
@@ -55,13 +61,11 @@ public class EditorSubscreen : ISubScreen, IUIHandler {
         }
 
         rl.BeginDrawing();
-
         rl.ClearBackground(Color.DarkBlue);
 
-        rl.DrawText("EDITOR", (UISpecs.Width - textWidth) / 2, UISpecs.Height / 8, titletextSize, Color.White);
-
-        fileExplorer.Render();
-
+        foreach (UIElement e in elements) {
+            e.Render();
+        }
         rl.EndDrawing();
     }
 
@@ -71,11 +75,12 @@ public class EditorSubscreen : ISubScreen, IUIHandler {
     }
 
     public void Update() {
-        if (rl.IsKeyPressed(KeyboardKey.Escape)) {
-            OnBack?.Invoke();
-            return;
+        btn_back.Rect = UISpecs.ScreenRect.RelativeRect(.45f, .9f, .1f, .05f);
+        lbl_title.Rect = UISpecs.ScreenRect.RelativeRect(0, 0, 1, .2f);
+        fileExplorer.Rect = UISpecs.ScreenRect.RelativeRect(.1f, .2f, .8f, .6f);
+        foreach (UIElement e in elements) {
+            e.Update();
         }
-        FocusedElement.Update();
     }
 }
 

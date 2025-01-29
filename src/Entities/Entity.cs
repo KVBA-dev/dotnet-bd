@@ -6,7 +6,7 @@ namespace Game.Entities;
 public abstract class Entity {
     public readonly float size = .9f;
     protected readonly GameState state;
-    protected IEntityController controller;
+    public IEntityController controller;
     protected EntityRenderer renderer;
     protected Stage currentStage;
     public float X { get; set; }
@@ -36,7 +36,7 @@ public abstract class Entity {
     }
     public void GoTo(float x, float y) => (X, Y) = (x, y);
     public void GoTo(Vector2 pos) => (X, Y) = (pos.X, pos.Y);
-    public Entity(GameState state, Stage stage) { 
+    public Entity(GameState state, Stage stage) {
         this.state = state;
         currentStage = stage;
         renderer = new();

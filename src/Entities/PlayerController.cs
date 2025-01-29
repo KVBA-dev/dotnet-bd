@@ -6,8 +6,14 @@ public sealed class PlayerController : IEntityController {
     private float horiz;
     private float vert;
 
+    public bool Enabled { get; set; }
 
     public void GetAxes() {
+        if (!Enabled) {
+            vert = 0;
+            horiz = 0;
+            return;
+        }
         horiz = 0;
         if (Input.Left) {
             horiz -= 1;

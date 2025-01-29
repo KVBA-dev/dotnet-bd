@@ -26,10 +26,10 @@ public static class LevelLoader {
 
     public static bool SaveLevel(string path, Level level) {
         Task<bool> task = Task.Run(() => SaveAsync(path, level));
-        while (!task.IsCompleted) {};
+        while (!task.IsCompleted) { }
+        ;
         return task.Result;
     }
-
 
     private static async Task<bool> SaveAsync(string path, Level level) {
         try {
@@ -41,5 +41,31 @@ public static class LevelLoader {
             return false;
         }
         return true;
-    } 
+    }
+
+    public static async Task<string?> LevelToString(Level level) {
+        try {
+            MemoryStream mem = new();
+            await JsonSerializer.SerializeAsync(mem, level, options);
+            mem.Seek(0, SeekOrigin.Begin);
+            string text;
+            using (StreamReader reader = new(mem)) {
+                text = await reader.ReadToEndAsync();
+            }
+            return text;
+        }
+        catch {
+            return null;
+        }
+    }
+
+    public static Level? LevelFromString(string levelStr) {
+        try {
+            return JsonSerializer.Deserialize<Level>(levelStr, options);
+        }
+        catch (Exception e) {
+            Console.WriteLine($"ERROR DURING LEVEL CONVERSION: {e.Message}");
+            return null;
+        }
+    }
 }

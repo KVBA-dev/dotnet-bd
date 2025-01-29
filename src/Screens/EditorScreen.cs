@@ -1,6 +1,5 @@
 using Game.Levels;
 using Game.UI;
-using Raylib_cs;
 
 namespace Game.Screens;
 
@@ -19,12 +18,13 @@ public sealed class EditorScreen : IScreen, IUIHandler {
         level = new();
         LoadLevel(levelPath);
         screens.Push(new LevelEditorSubscreen(this, state));
+        OnLevelLoaded = () => { };
+        GC.Collect();
     }
 
     public void Render() {
         if (screens.Count > 0) {
             screens.Peek().Render();
-            return;
         }
     }
 
@@ -42,7 +42,6 @@ public sealed class EditorScreen : IScreen, IUIHandler {
     public void ExitEditor() {
         LevelLoader.SaveLevel(levelPath, level);
         State.currentScreen = new MainMenuScreen(State);
-        GC.Collect();
     }
 
     public void Update() {

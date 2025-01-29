@@ -5,7 +5,7 @@ namespace Game.UI;
 public sealed class ImageButton : UIElement {
     public Texture2D Image { get; set; }
     public Rectangle ImageRect { get; set; }
-
+    public Color Tint { get; set; } = Color.White;
     public event Action OnClick = () => { };
     public ImageButton(IUIHandler parent, Rectangle rect, Texture2D image) : base(parent, rect) {
         Image = image;
@@ -28,6 +28,6 @@ public sealed class ImageButton : UIElement {
         }
 
         rl.DrawRectangleRec(Rect, col);
-        rl.DrawTexturePro(Image, new(0, 0, Image.Width, Image.Height), ImageRect, new(0, 0), 0, Color.White);
+        rl.DrawTexturePro(Image, new(0, 0, Image.Width, Image.Height), ImageRect, new(0, 0), 0, Tint);
     }
 }
